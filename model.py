@@ -26,41 +26,46 @@ def train_regression_model(X_train: ArrayLike, y_train: ArrayLike) -> LinearRegr
     """
 
     # TODO: your code here
+    lr_model = LinearRegression()
+    lr_model.fit(X_train, y_train)
 
-    return model
+    return lr_model
 
-def save_regression_model(model: LinearRegression, filename: str = "linear_regression_model.joblib"):
+def save_regression_model(lr_model: LinearRegression, filename: str = "linear_regression_model.joblib"):
     """
     Serialize and save the regression model.
 
-    This function takes a trained regression 'model' and file name 'filename' that has a default value.
+    This function takes a trained regression 'lr_model' and file name 'filename' that has a default value.
     It uses Joblib 'dump' to save the model using the provided file name.
 
     Args:
-        model (sklearn.linear_model.LinearRegression): Trained regression model to be evaluated.
+        lr_model (sklearn.linear_model.LinearRegression): Trained regression model to be evaluated.
         filename (str): Name of the file that is used to store the model.
 
     """
     
     # TODO: your code here
+    dump(lr_model, filename)
+    print(f"Model is saved into a file: {filename}")
 
-def evaluate_regression_model(model: LinearRegression, X_test: ArrayLike, y_test: ArrayLike):
+def evaluate_regression_model(lr_model: LinearRegression, X_test: ArrayLike, y_test: ArrayLike):
     """
     Evaluate the performance of a regression model on test data.
 
-    This function takes a trained regression 'model', test feature matrix 'X_test',
+    This function takes a trained regression 'lr_model', test feature matrix 'X_test',
     and corresponding test target values 'y_test'. It calculates Mean Squared Error (MSE)
     and prints it in terminal.
 
     Args:
-        model (sklearn.linear_model.LinearRegression): Trained regression model to be evaluated.
+        lr_model (sklearn.linear_model.LinearRegression): Trained regression model to be evaluated.
         X_test (array-like): Test feature matrix.
         y_test (array-like): Validation target values.
 
     """
     
     # TODO: your code here
-
+    predictions = lr_model.predict(X_test)
+    mse = mean_squared_error(y_test, predictions)
     print(f"Mean Squared Error: {mse}")
 
 def save_initial_datasets(X: ArrayLike, y: ArrayLike):
@@ -80,6 +85,10 @@ def save_initial_datasets(X: ArrayLike, y: ArrayLike):
     
     # TODO: your code here
 
+    dump(X, X_filename)
+    dump(y, y_filename)
+    print(f"Initial datasets are saved ({X_filename}, {y_filename}).")
+
 if __name__ == '__main__':
     # Generate a dataset
     X, y = make_regression(n_samples=100, n_features=1, noise=20, random_state=42)
@@ -91,13 +100,13 @@ if __name__ == '__main__':
     X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42)
 
     # Train a linear regression model
-    model = train_regression_model(X_train, y_train)
+    lr_model = train_regression_model(X_train, y_train)
 
     # Evaluate the model
-    evaluate_regression_model(model, X_test, y_test)
+    evaluate_regression_model(lr_model, X_test, y_test)
 
     # Save the model
-    save_regression_model(model)
+    save_regression_model(lr_model)
 
     # Save datasets
     save_initial_datasets(X, y)

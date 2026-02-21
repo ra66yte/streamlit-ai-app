@@ -23,6 +23,8 @@ def load_and_predict(X: ArrayLike, filename: str = "linear_regression_model.jobl
     
     # TODO: your code here
 
+    lr_model = load(filename)
+    y = lr_model.predict(X)
     return y
 
 def create_streamlit_app():
@@ -48,17 +50,22 @@ def create_streamlit_app():
     # TODO: your code here
 
     # Streamlit app title
+    st.title("Linear Regression: Actual vs Predicted")
 
     # User input for new prediction using a slider
+    input_feature = st.slider("Select an input feature value", -3.0, 3.0, 0.0)
 
     # Button to make a prediction
-
+    if st.button("Predict value"):
         # 1. Call load_and_predict functions.
         # Make sure you convert the input_feature to a matrix before calling load_and_predict, e.g., load_and_predict([[input_feature]])
-
+        prediction = load_and_predict(np.array([[input_feature]]))
         # 2. Display the prediction.
+        pred_value = prediction.item()
 
+        st.write(f"### Predicted value: {pred_value:.4f}")
         # 4. Call visualize_difference to display a plot visualizing the difference between actual and perdicted value.
+        visualize_difference(input_feature, pred_value)
 
 def visualize_difference(input_feature: float, prediction: ArrayLike):
     """
@@ -88,33 +95,47 @@ def visualize_difference(input_feature: float, prediction: ArrayLike):
     difference = actual_target - prediction
 
     # Visualization
-    fig = plt.figure(figsize=(6,4))
+    fig, ax = plt.subplots(figsize=(6, 4))
     # TODO: your code here
 
     # Plot the entire dataset (X, y) as grey dots to visualize the data distribution.
     # plt.scatter....
+    ax.scatter(X, y, color='grey', alpha=0.5, label='Dataset')
 
     # Plot the actual target value for a specific input feature as a blue dot.
     # plt.scatter...
+    ax.scatter(input_feature, actual_target, color='blue', s=100, label='Actual Target', zorder=5)
 
     # Plot the predicted target value for the same input feature as a red dot.
     # plt.scatter...
+    ax.scatter(input_feature, prediction, color='red', s=100, label='Predicted Target', zorder=5)
 
     # Display a legend on the plot to label the different scatter points (dataset, actual target, predicted target).
+    ax.legend()
 
     # Set the title of the plot, describing what is being visualized.
+    ax.set_title("Actual vs Predicted Value Difference")
 
     # Set the label for the x-axis to 'Feature', indicating that the x-axis represents the input features.
+    ax.set_xlabel("Feature")
 
     # Set the label for the y-axis to 'Target', indicating that the y-axis represents the target values (actual or predicted).
+    ax.set_ylabel("Target")
 
     # Enable a grid on the plot to improve readability.
+    ax.grid(True, linestyle='--', alpha=0.7)
 
     # Draw a dashed line ('k--' for black dashed line) between the actual and predicted target values to visually represent the difference.
     # plt.plot...
+    ax.plot([input_feature, input_feature], [actual_target, prediction], 'k--', linewidth=1.5)
 
     # Annotate the plot with the difference between the actual and predicted target values, positioned halfway between them and offset slightly for visibility.
     # plt.annotate...
+    midpoint = (actual_target + prediction) / 2
+    ax.annotate(f'Diff: {float(difference):.4f}',
+                xy=(input_feature, midpoint),
+                xytext=(input_feature + 0.3, midpoint),  # Зсув тексту вбік для видимості
+                arrowprops=dict(arrowstyle='->', color='black'))
 
     st.pyplot(fig)
 
